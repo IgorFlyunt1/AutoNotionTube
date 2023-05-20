@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F19A502A-08B5-4D73-99C8-161F4F8D3F6E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoNotionTube.Worker", "src\AutoNotionTube.Worker\AutoNotionTube.Worker.csproj", "{7756F0CB-773B-426E-857F-85FE9554113A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoNotionTube.Infrastructure", "src\AutoNotionTube.Infrastructure\AutoNotionTube.Infrastructure.csproj", "{1BA528A5-9179-4EC8-A0BA-DA9C155EC1E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoNotionTube.Domain", "src\AutoNotionTube.Domain\AutoNotionTube.Domain.csproj", "{CC9912FF-D602-4DE7-95EB-8E454CAD09DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoNotionTube.Core", "src\AutoNotionTube.Core\AutoNotionTube.Core.csproj", "{712C92EC-8C1C-489B-8449-0A9EB9C0ADDB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F3919687-F55E-43CE-8B28-FE5C40121FD4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoNotionTube.Core.UnitTests", "tests\AutoNotionTube.Core.UnitTests\AutoNotionTube.Core.UnitTests.csproj", "{71091A6F-333C-4DEC-8B7B-347BDBAA7E45}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7756F0CB-773B-426E-857F-85FE9554113A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7756F0CB-773B-426E-857F-85FE9554113A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7756F0CB-773B-426E-857F-85FE9554113A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7756F0CB-773B-426E-857F-85FE9554113A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BA528A5-9179-4EC8-A0BA-DA9C155EC1E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BA528A5-9179-4EC8-A0BA-DA9C155EC1E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BA528A5-9179-4EC8-A0BA-DA9C155EC1E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BA528A5-9179-4EC8-A0BA-DA9C155EC1E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC9912FF-D602-4DE7-95EB-8E454CAD09DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC9912FF-D602-4DE7-95EB-8E454CAD09DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC9912FF-D602-4DE7-95EB-8E454CAD09DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC9912FF-D602-4DE7-95EB-8E454CAD09DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{712C92EC-8C1C-489B-8449-0A9EB9C0ADDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{712C92EC-8C1C-489B-8449-0A9EB9C0ADDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{712C92EC-8C1C-489B-8449-0A9EB9C0ADDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{712C92EC-8C1C-489B-8449-0A9EB9C0ADDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71091A6F-333C-4DEC-8B7B-347BDBAA7E45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71091A6F-333C-4DEC-8B7B-347BDBAA7E45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71091A6F-333C-4DEC-8B7B-347BDBAA7E45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71091A6F-333C-4DEC-8B7B-347BDBAA7E45}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7756F0CB-773B-426E-857F-85FE9554113A} = {F19A502A-08B5-4D73-99C8-161F4F8D3F6E}
+		{1BA528A5-9179-4EC8-A0BA-DA9C155EC1E4} = {F19A502A-08B5-4D73-99C8-161F4F8D3F6E}
+		{CC9912FF-D602-4DE7-95EB-8E454CAD09DC} = {F19A502A-08B5-4D73-99C8-161F4F8D3F6E}
+		{712C92EC-8C1C-489B-8449-0A9EB9C0ADDB} = {F19A502A-08B5-4D73-99C8-161F4F8D3F6E}
+		{71091A6F-333C-4DEC-8B7B-347BDBAA7E45} = {F3919687-F55E-43CE-8B28-FE5C40121FD4}
+	EndGlobalSection
+EndGlobal
