@@ -1,0 +1,7 @@
+version: '3.9'
+services:
+  autonotiontube:
+      image: 'autonotiontube.worker'
+      build:
+        context: .
+        dockerfile: src/AutoNotionTube.Worker/Dockerfile
