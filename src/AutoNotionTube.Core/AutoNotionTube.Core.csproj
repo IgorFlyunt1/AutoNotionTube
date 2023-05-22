@@ -17,7 +17,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\AutoNotionTube.Domain\AutoNotionTube.Domain.csproj" />
-      <ProjectReference Include="..\AutoNotionTube.Infrastructure\AutoNotionTube.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

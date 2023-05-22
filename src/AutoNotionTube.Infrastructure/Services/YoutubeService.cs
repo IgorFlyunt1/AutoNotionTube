@@ -1,12 +1,11 @@
-using AutoNotionTube.Core.Constants;
 using AutoNotionTube.Core.Interfaces;
-using AutoNotionTube.Core.Settings;
+using AutoNotionTube.Infrastructure.Settings;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Microsoft.Extensions.Options;
 
-namespace AutoNotionTube.Core.Services;
+namespace AutoNotionTube.Infrastructure.Services;
 
 public class YoutubeService : IYoutubeService
 {

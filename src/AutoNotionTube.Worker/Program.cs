@@ -1,5 +1,4 @@
 using AutoNotionTube.Core;
-using AutoNotionTube.Domain;
 using AutoNotionTube.Infrastructure;
 using AutoNotionTube.Worker;
 using Serilog;
@@ -25,10 +24,9 @@ try
                 typeof(AutoNotionTube.Infrastructure.DependencyInjection));
 
             services.AddCore(configuration);
-            services.AddDomain(configuration);
             services.AddInfrastructure(configuration);
         })
-        .UseSerilog() // use Serilog as the logging framework
+        .UseSerilog()
         .Build();
 
     host.Run();

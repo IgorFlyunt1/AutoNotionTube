@@ -1,4 +1,4 @@
-namespace AutoNotionTube.Core.Settings;
+namespace AutoNotionTube.Infrastructure.Settings;
 
 public class YoutubeSettings
 {
