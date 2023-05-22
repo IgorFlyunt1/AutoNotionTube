@@ -32,9 +32,6 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, Uni
                 Snippet = new VideoSnippet
                 {
                     Title = request.VideoTitle,
-                    Description = "Default Video Description",
-                    Tags = new List<string> { "tag1", "tag2" },
-                    CategoryId = "22",
                 },
                 Status = new VideoStatus
                 {
