@@ -8,55 +8,80 @@ using GoogleVideo = Google.Apis.YouTube.v3.Data.Video;
 
 namespace AutoNotionTube.Core.Application.Features.UploadVideo;
 
-public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, Unit>
+public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, GoogleVideo?>
 {
     private readonly ILogger<UploadVideoCommandHandler> _logger;
     private readonly IYoutubeService _youtubeService;
+    private readonly IVideoRepository _videoRepository;
 
-    public UploadVideoCommandHandler(ILogger<UploadVideoCommandHandler> logger, IYoutubeService youtubeService)
+    public UploadVideoCommandHandler(ILogger<UploadVideoCommandHandler> logger, IYoutubeService youtubeService, IVideoRepository videoRepository)
     {
         _logger = logger;
         _youtubeService = youtubeService;
+        _videoRepository = videoRepository;
     }
 
-    public async Task<Unit> Handle(UploadVideoCommand request, CancellationToken cancellationToken)
+    public async Task<GoogleVideo?> Handle(UploadVideoCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Uploading video: {VideoFile}", request.VideoFile);
 
-        try
-        {
-            var youTubeService = await _youtubeService.CreateService(cancellationToken);
+        GoogleVideo? videoResponse = null;
+        int uploadAttempts = 0;
 
-            var video = new Video
+        do
+        {
+            try
             {
-                Snippet = new VideoSnippet
+                var youTubeService = await _youtubeService.CreateService(cancellationToken);
+
+                var video = new Video
                 {
-                    Title = request.VideoTitle,
-                },
-                Status = new VideoStatus
+                    Snippet = new VideoSnippet
+                    {
+                        Title = request.VideoTitle,
+                    },
+                    Status = new VideoStatus
+                    {
+                        PrivacyStatus = "unlisted", // or  unlisted "private" or "public",
+                        MadeForKids = false
+                    },
+                };
+
+                await using var fileStream = new FileStream(request.VideoFile, FileMode.Open);
+
+                var videosInsertRequest = youTubeService.Videos.Insert(
+                    new GoogleVideo { Snippet = video.Snippet, Status = video.Status },
+                    "snippet,status", fileStream, "video/*");
+                videosInsertRequest.ProgressChanged += VideosInsertRequest_ProgressChanged;
+                videosInsertRequest.ResponseReceived += (videoData) =>
                 {
-                    PrivacyStatus = "unlisted", // or  unlisted "private" or "public",
-                    MadeForKids = false
-                },
-            };
+                    VideosInsertRequest_ResponseReceived(videoData);
+                    videoResponse = videoData;
+                };
 
-            using var fileStream = new FileStream(request.VideoFile, FileMode.Open);
+                await videosInsertRequest.UploadAsync(cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Attempt {Attempt} of 3 failed to upload video to YouTube", uploadAttempts + 1);
 
-            var videosInsertRequest = youTubeService.Videos.Insert(
-                new GoogleVideo { Snippet = video.Snippet, Status = video.Status },
-                "snippet,status", fileStream, "video/*");
-            videosInsertRequest.ProgressChanged += VideosInsertRequest_ProgressChanged;
-            videosInsertRequest.ResponseReceived += VideosInsertRequest_ResponseReceived;
+                if (uploadAttempts < 2) 
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(3), cancellationToken);
+                }
+            }
 
-            await videosInsertRequest.UploadAsync(cancellationToken);
-
-            return Unit.Value;
+            uploadAttempts++;
         }
-        catch (Exception ex)
+        while (videoResponse == null && uploadAttempts < 3); // Retry up to 3 times
+
+        if (videoResponse?.Id is null || videoResponse.Status?.UploadStatus is not "uploaded")
         {
-            _logger.LogError(ex, "Error uploading video to YouTube");
-            throw;
+            _logger.LogError("All attempts failed to upload video to YouTube");
+            await _videoRepository.MoveFailedVideo(request.VideoFile);
         }
+
+        return videoResponse;
     }
 
     private void VideosInsertRequest_ProgressChanged(IUploadProgress progress)

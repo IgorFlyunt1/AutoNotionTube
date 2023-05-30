@@ -4,4 +4,5 @@ public class VideoFilesDirectorySettings
 {
     public string MeetingsDirectory { get; set; }
     public string TutorialsDirectory { get; set; }
+    public string FailedVideosDirectory { get; set; }
 }

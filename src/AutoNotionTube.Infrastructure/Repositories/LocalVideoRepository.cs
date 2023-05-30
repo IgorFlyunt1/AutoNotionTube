@@ -1,5 +1,6 @@
 using AutoNotionTube.Core.Interfaces;
 using AutoNotionTube.Domain.Entities;
+using AutoNotionTube.Infrastructure.Extensions;
 using AutoNotionTube.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 
@@ -33,7 +34,8 @@ public class LocalVideoRepository : IVideoRepository
                 {
                     FileName = fileInfo.FullName,
                     Title = fileInfo.Name.Replace(fileInfo.Extension, string.Empty),
-                    Size = fileInfo.Length,
+                    SizeMb = fileInfo.Length / 1024.0 / 1024.0,
+                    Seconds = fileInfo.FullName.GetVideoDurationInSeconds(),
                     Directory = directory.GetLastPathComponent()
                 };
                 videoFiles.Add(videoFile);
@@ -43,15 +45,12 @@ public class LocalVideoRepository : IVideoRepository
         return Task.FromResult<IReadOnlyCollection<VideoFile>>(videoFiles);
     }
     
-    
-}
-
-public static class StringExtensions
-{
-    public static string GetLastPathComponent(this string path)
+    public Task MoveFailedVideo(string videoFilePath)
     {
-        char[] separators = { '\\', '/' };
-        string[] parts = path.Split(separators);
-        return parts[parts.Length - 1];
+        var failedVideosDirectory = _videoFilesDirectorySettings.FailedVideosDirectory;
+        var fileInfo = new FileInfo(videoFilePath);
+        var destinationFilePath = Path.Combine(failedVideosDirectory, fileInfo.Name);
+        File.Move(videoFilePath, destinationFilePath);
+        return Task.CompletedTask;
     }
 }
