@@ -15,8 +15,11 @@
 // -----------------------------------------------------------------------
 #endregion
 
+using System.Runtime.Serialization;
+
 namespace AutoNotionTube.Core.Exceptions
 {
+    [Serializable]
     public class CaptionNotAvailableException : Exception
     {
         public CaptionNotAvailableException()
@@ -32,6 +35,10 @@ namespace AutoNotionTube.Core.Exceptions
             : base(message, inner)
         {
         }
-    }
 
+        protected CaptionNotAvailableException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+    }
 }
