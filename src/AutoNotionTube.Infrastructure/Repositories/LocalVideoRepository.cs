@@ -49,7 +49,9 @@ public class LocalVideoRepository : IVideoRepository
     {
         var failedVideosDirectory = _videoFilesDirectorySettings.FailedVideosDirectory;
         var fileInfo = new FileInfo(videoFilePath);
-        var destinationFilePath = Path.Combine(failedVideosDirectory, fileInfo.Name);
+        var dateTimeNow = DateTime.Now.ToString("yyyyMMdd_HHmm");
+        var newFileName = $"{Path.GetFileNameWithoutExtension(fileInfo.Name)}_{dateTimeNow}{fileInfo.Extension}";
+        var destinationFilePath = Path.Combine(failedVideosDirectory, newFileName);
         File.Move(videoFilePath, destinationFilePath);
         return Task.CompletedTask;
     }

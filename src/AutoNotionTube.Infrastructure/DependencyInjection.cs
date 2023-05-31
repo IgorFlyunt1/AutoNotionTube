@@ -20,33 +20,30 @@ public static class DependencyInjection
         services.AddSingleton<IYoutubeService, YoutubeService>();
         services.AddScoped<IVideoRepository, LocalVideoRepository>();
         
-        // AddYoutubeService(services);
-        
+        AddYoutubeService(services);
+
         return services;
     }
 
-    // private static void AddYoutubeService(IServiceCollection services) =>
-    //     services.AddSingleton<YouTubeService>(sp =>
-    //     {
-    //         var youtubeSettings = sp.GetRequiredService<IOptions<YoutubeSettings>>().Value;
-    //         YouTubeService youtubeService;
-    //
-    //         using (var stream = new FileStream(youtubeSettings.ClientSecretsFilePath, FileMode.Open, FileAccess.Read))
-    //         {
-    //             var secrets = GoogleClientSecrets.FromStream(stream).Result;
-    //
-    //             youtubeService = new YouTubeService(new BaseClientService.Initializer()
-    //             {
-    //                 HttpClientInitializer = GoogleWebAuthorizationBroker.AuthorizeAsync(
-    //                     secrets.Secrets,
-    //                     new[] { YouTubeService.Scope.YoutubeUpload },
-    //                     "user",
-    //                     CancellationToken.None
-    //                 ).Result,
-    //                 ApplicationName = typeof(YouTubeService).ToString()
-    //             });
-    //         }
-    //
-    //         return youtubeService;
-    //     });
+    private static void AddYoutubeService(IServiceCollection services) =>
+        services.AddScoped<YouTubeService>(provider =>
+        {
+            var youtubeSettings = provider.GetRequiredService<IOptions<YoutubeSettings>>().Value;
+
+            using var stream = new FileStream(youtubeSettings.ClientSecretsFilePath, FileMode.Open, FileAccess.Read);
+            var secrets = GoogleClientSecrets.FromStreamAsync(stream).GetAwaiter().GetResult();
+
+            var youTubeService = new YouTubeService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    secrets.Secrets,
+                    new[] { YouTubeService.Scope.YoutubeUpload, YouTubeService.Scope.YoutubeForceSsl },
+                    "user",
+                    CancellationToken.None
+                ).GetAwaiter().GetResult(),
+                ApplicationName = typeof(YouTubeService).ToString()
+            });
+
+            return youTubeService;
+        });
 }

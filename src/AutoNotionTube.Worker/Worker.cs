@@ -59,6 +59,9 @@ public class Worker : BackgroundService
                     }
                 }
             }
+            
+            //Test max quota reached for youtube api and wait 10 minutes
+            //Test error when move the same video to failed folder add to video name current date time
 
             // Upload Transcript ChatGPT
             //Upload iframe and result from ChatGPT to Notion
