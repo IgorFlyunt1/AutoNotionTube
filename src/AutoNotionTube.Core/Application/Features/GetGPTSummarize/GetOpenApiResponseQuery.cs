@@ -1,6 +1,6 @@
-#region Header
+﻿#region Header
 // -----------------------------------------------------------------------
-//  <copyright file="GetCaptionsQuery.cs" company="INVENTIO AG">
+//  <copyright file="GetGPTSummarizeQuery.cs" company="INVENTIO AG">
 //      Copyright © 2023 INVENTIO AG
 //      All rights reserved.
 //      INVENTIO AG, Seestrasse 55, CH-6052 Hergiswil, owns and retains all copyrights and other intellectual property rights in this
@@ -15,15 +15,30 @@
 // -----------------------------------------------------------------------
 #endregion
 
-using System.Text.RegularExpressions;
+using AutoNotionTube.Core.DTOs;
+using AutoNotionTube.Core.Interfaces;
 using MediatR;
 
-namespace AutoNotionTube.Core.Application.Features.GetCaptions
+namespace AutoNotionTube.Core.Application.Features.GetGPTSummarize
 {
-    public class GetCaptionsQuery : IRequest<string>
+    public class GetOpenApiResponseQuery : IRequest<OpenApiResponse>
     {
-        public string VideoId { get; set; } = null!;
-        public int Seconds { get; set; }
-        public double SizeMb { get; set; }
+        public string Captions { get; set; } = null!;
+        public string VideoTitle { get; set; } = null!;
+    }
+    
+    public class GetOpenApiResponseHandler : IRequestHandler<GetOpenApiResponseQuery, OpenApiResponse>
+    {
+        private readonly IOpenApiService _openApiService;
+
+        public GetOpenApiResponseHandler(IOpenApiService openApiService)
+        {
+            _openApiService = openApiService;
+        }
+
+        public async Task<OpenApiResponse> Handle(GetOpenApiResponseQuery request, CancellationToken cancellationToken)
+        {
+            return await _openApiService.GetSummarize(request.Captions, request.VideoTitle);
+        }
     }
 }

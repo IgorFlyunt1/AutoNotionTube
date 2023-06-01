@@ -17,12 +17,27 @@ public static class DependencyInjection
     {
         services.Configure<YoutubeSettings>(configuration.GetSection(nameof(YoutubeSettings)));
         services.Configure<VideoFilesDirectorySettings>(configuration.GetSection(nameof(VideoFilesDirectorySettings)));
+        services.Configure<OpenApiSettings>(configuration.GetSection(nameof(OpenApiSettings)));
+        services.Configure<NotionSettings>(configuration.GetSection(nameof(NotionSettings)));
         services.AddSingleton<IYoutubeService, YoutubeService>();
         services.AddScoped<IVideoRepository, LocalVideoRepository>();
-        
+        services.AddScoped<IOpenApiService, OpenApiService>();
+        services.AddScoped<INotionService, NotionService>();
+
         AddYoutubeService(services);
+        AddNotionClient(services);
 
         return services;
+    }
+
+    private static void AddNotionClient(IServiceCollection services)
+    {
+        var notionSettings = services.BuildServiceProvider().GetRequiredService<IOptions<NotionSettings>>().Value;
+
+        services.AddNotionClient(options =>
+        {
+            options.AuthToken = notionSettings.Secret;
+        });
     }
 
     private static void AddYoutubeService(IServiceCollection services) =>

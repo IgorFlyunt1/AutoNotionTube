@@ -14,7 +14,11 @@ namespace AutoNotionTube.Core.Extensions
 
             double approximateWaitTimeSec = (sizeMb * seconds) / approximationRatio;
 
-            return (int)Math.Round(approximateWaitTimeSec);
+            var result = (int)Math.Round(approximateWaitTimeSec);
+
+            //TODO: Remove this hack
+            // return result < 300 ? 300 : result;
+            return 1;
         }
         
         public static string GetVideoYoutubeUrl(this string videoId)

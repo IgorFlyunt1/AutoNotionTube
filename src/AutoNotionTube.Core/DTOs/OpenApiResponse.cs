@@ -1,6 +1,6 @@
 #region Header
 // -----------------------------------------------------------------------
-//  <copyright file="GetCaptionsQuery.cs" company="INVENTIO AG">
+//  <copyright file="OpenApiResponse.cs" company="INVENTIO AG">
 //      Copyright © 2023 INVENTIO AG
 //      All rights reserved.
 //      INVENTIO AG, Seestrasse 55, CH-6052 Hergiswil, owns and retains all copyrights and other intellectual property rights in this
@@ -15,15 +15,13 @@
 // -----------------------------------------------------------------------
 #endregion
 
-using System.Text.RegularExpressions;
-using MediatR;
-
-namespace AutoNotionTube.Core.Application.Features.GetCaptions
+namespace AutoNotionTube.Core.DTOs
 {
-    public class GetCaptionsQuery : IRequest<string>
+    public class OpenApiResponse
     {
-        public string VideoId { get; set; } = null!;
-        public int Seconds { get; set; }
-        public double SizeMb { get; set; }
+        public string Summary { get; set; } = null!;
+        public string Steps { get; set; } = null!;
+        public string ShortSummary { get; set; } = null!;
+        public IReadOnlyCollection<string> Tags { get; set; } = null!;
     }
 }
