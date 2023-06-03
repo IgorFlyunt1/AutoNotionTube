@@ -15,45 +15,53 @@
 // -----------------------------------------------------------------------
 #endregion
 
+using System.Text;
+using System.Text.Json;
 using AutoNotionTube.Core.DTOs;
 using AutoNotionTube.Core.Interfaces;
 using AutoNotionTube.Infrastructure.Settings;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Notion.Client;
 
 namespace AutoNotionTube.Infrastructure.Services
 {
     public class NotionService : INotionService
     {
         private readonly NotionSettings _notionSettings;
-        private readonly INotionClient _notionClient;
+        private readonly HttpClient _httpClient;
+        private readonly ILogger<NotionService> _logger;
 
-        public NotionService(IOptions<NotionSettings> notionSettings, INotionClient notionClient)
+        public NotionService(IOptions<NotionSettings> notionSettings, IHttpClientFactory clientFactory,
+            ILogger<NotionService> logger)
         {
-            _notionClient = notionClient;
+            _logger = logger;
+            _httpClient = clientFactory.CreateClient();
             _notionSettings = notionSettings.Value;
         }
-            
+
         public async Task<bool> CreateNote(NotionNoteRequest note)
         {
-          
-            var pagesCreateParameters = PagesCreateParametersBuilder
-                .Create(new DatabaseParentInput { DatabaseId = _notionSettings.DatabaseId })
-                .AddProperty("Name",
-                    new TitlePropertyValue
-                    {
-                        Title = new List<RichTextBase>
-                        {
-                            new RichTextText { Text = new Text { Content = "Test Page Title" } }
-                        }
-                    })
-                .Build();
+            // string functionUrl = "https://autonotiontubefunction.azurewebsites.net/api/AutoNotionTubeFunc?code=RoF29PA8IeGtXWVirHohCImv5kBnaFdwnNZs-rW1cojBAzFujQ0K4A==";
+            string functionUrl = "http://localhost:7071/api/AutoNotionTubeFunc";
 
-            // Create a new page in Notion.
-            var page = await _notionClient.Pages.CreateAsync(pagesCreateParameters);
+            var body = new { databaseId = "f6cd2e1b3c6a445f8eb136e03130ef6d", pageTitle = "Test Page" + DateTime.Now, };
 
-            // Return true if the page was created successfully.
-            return page != null;
+            var json = JsonSerializer.Serialize(body);
+
+            var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync(functionUrl, data);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Something went wrong when calling the API.");
+            }
+
+            string result = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine(result);
+
+            return true;
         }
     }
 }

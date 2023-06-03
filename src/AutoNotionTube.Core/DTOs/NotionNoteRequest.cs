@@ -19,10 +19,12 @@ namespace AutoNotionTube.Core.DTOs
 {
     public class NotionNoteRequest
     {
+        public string DatabaseId { get; set; } = null!;
         public string Title { get; set; } = null!;
         public IReadOnlyCollection<string> Tags { get; set; } = null!;
-        public string Description { get; set; } = null!;
-        public string VideoIframe { get; set; } = null!;
-        public string Directory { get; set; } = null!;
+        public string Summary { get; set; } = null!;
+        public string Steps { get; set; } = null!;
+        public string ShortSummary { get; set; } = null!;
+        public string Embed { get; set; } = null!;
     }
 }

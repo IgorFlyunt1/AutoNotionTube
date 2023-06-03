@@ -24,21 +24,14 @@ public static class DependencyInjection
         services.AddScoped<IOpenApiService, OpenApiService>();
         services.AddScoped<INotionService, NotionService>();
 
+        services.AddHttpClient();
+
         AddYoutubeService(services);
-        AddNotionClient(services);
 
         return services;
     }
 
-    private static void AddNotionClient(IServiceCollection services)
-    {
-        var notionSettings = services.BuildServiceProvider().GetRequiredService<IOptions<NotionSettings>>().Value;
 
-        services.AddNotionClient(options =>
-        {
-            options.AuthToken = notionSettings.Secret;
-        });
-    }
 
     private static void AddYoutubeService(IServiceCollection services) =>
         services.AddScoped<YouTubeService>(provider =>

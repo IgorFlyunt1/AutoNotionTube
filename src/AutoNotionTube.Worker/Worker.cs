@@ -71,8 +71,8 @@ public class Worker : BackgroundService
             //                 Tags = openApiResponse.Tags,
             //                 Description =
             //                     $"{openApiResponse.ShortSummary} \\n {openApiResponse.Summary} \\n {openApiResponse.Steps}",
-            //                 Directory = videoFile.Directory,
-            //                 VideoIframe = youtubeResponse.Id.GetVideoEmbedIframe()
+            //                 DatabaseId = videoFile.DatabaseId,
+            //                 Embed = youtubeResponse.Id.GetVideoEmbedIframe()
             //             };
             //         }
             //     }
@@ -92,10 +92,12 @@ public class Worker : BackgroundService
         NotionNoteRequest noteRequest = new NotionNoteRequest
         {
             Title = "Azure AppService Availability Zone",
-            Description = "Description",
+            Steps = "Steps",
+            ShortSummary = "ShortSummary",
+            Summary = "Summary",
             Tags = new List<string> { "Azure", "AppService", "Availability", "Zone" },
-            Directory = "Directory",
-            VideoIframe = "VideoIframe"
+            DatabaseId = "DatabaseId",
+            Embed = "Embed"
         };
             
         var notionResponse = await _mediator.Send(
@@ -116,8 +118,8 @@ public class Worker : BackgroundService
         //         Title = "Azure AppService Availability Zone",
         //         Description = "Description",
         //         Tags = openApiResponse.Tags,
-        //         Directory = "Directory",
-        //         VideoIframe = "VideoIframe"
+        //         DatabaseId = "DatabaseId",
+        //         Embed = "Embed"
         //     };
         //     
         //     var notionResponse = await _mediator.Send(
