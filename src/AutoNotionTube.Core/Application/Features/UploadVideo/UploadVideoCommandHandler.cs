@@ -68,12 +68,11 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, You
     private async Task<YoutubeResponse?> TryUploadVideo(UploadVideoCommand request, int uploadAttempts,
         CancellationToken cancellationToken)
     {
-        FileStream? fileStream = default;
         try
         {
+            await using var fileStream = new FileStream(request.VideoFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
             var youTubeService = await _youtubeService.GetService(cancellationToken);
             var video = CreateVideo(request.VideoTitle);
-            fileStream = new FileStream(request.VideoFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
             VideosResource.InsertMediaUpload videosInsertRequest = CreateVideoInsertRequest(youTubeService, video, fileStream);
 
             return await UploadVideoAsync(videosInsertRequest, cancellationToken);
@@ -106,7 +105,7 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, You
     {
         var videosInsertRequest = youTubeService.Videos.Insert(
             new GoogleVideo { Snippet = youtubeApiVideo.Snippet, Status = youtubeApiVideo.Status },
-            "snippet,status", fileStream, "youtubeApiVideo/*");
+            "snippet,status", fileStream, "video/*");
 
         videosInsertRequest.ProgressChanged += VideosInsertRequest_ProgressChanged;
         videosInsertRequest.ResponseReceived += VideosInsertRequest_ResponseReceived;

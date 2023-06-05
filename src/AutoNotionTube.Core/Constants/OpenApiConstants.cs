@@ -24,12 +24,12 @@ namespace AutoNotionTube.Core.Constants
 
         public const string Summarize = "Summarize this text: ";
 
-        public const string Steps = "Create a list of steps or instruction from you previous summarize answer?";
+        public const string Steps = "Create a list of steps or instruction from you previous summarize answer? (please note if you won't find further steps or instructions from you previous summarize answer, please just answer with 'no steps')";
 
         public const string ShortSummarize =
             "Give me a super short extract from your summary in simple words, just as a desktop shortcut just for my brain from this text?";
 
         public const string Tags =
-            "Give me a list of tags from your full summary for my notion note separated by comma and PascalCase";
+            "Give me a list of tags from your full summary for my notion note separated by comma and PascalCase (please note if you won't find further tags from you previous summarize answer, please just answer with 'no tags', if you will find give me answer only with text without any additional comments like - (Here is your tags: result... or Sure, here are the tags:  result...)";
     }
 }
