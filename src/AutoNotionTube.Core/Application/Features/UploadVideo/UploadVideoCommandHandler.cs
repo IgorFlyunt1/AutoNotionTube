@@ -1,5 +1,6 @@
 using System.Net;
 using AutoNotionTube.Core.DTOs;
+using AutoNotionTube.Core.Exceptions;
 using AutoNotionTube.Core.Interfaces;
 using Google.Apis.Upload;
 using Google.Apis.YouTube.v3;
@@ -32,7 +33,7 @@ namespace AutoNotionTube.Core.Application.Features.UploadVideo;
 /// - Dependency Inversion Principle (DIP): The solution depends on abstractions (IYoutubeService, IVideoRepository) 
 /// rather than concrete implementations, with dependencies injected into the class via its constructor.
 /// </summary>
-public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, GoogleVideo?>
+public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, YoutubeResponse>
 {
     private readonly ILogger<UploadVideoCommandHandler> _logger;
     private readonly IYoutubeService _youtubeService;
@@ -46,12 +47,12 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, Goo
         _videoRepository = videoRepository;
     }
 
-    public async Task<GoogleVideo?> Handle(UploadVideoCommand request, CancellationToken cancellationToken)
+    public async Task<YoutubeResponse> Handle(UploadVideoCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Uploading youtubeApiVideo: {VideoFile}", request.VideoFile);
 
         var uploadAttempts = 0;
-        GoogleVideo? videoResponse = null;
+        YoutubeResponse? videoResponse = null;
 
         while (videoResponse == null && uploadAttempts < 3)
         {
@@ -60,10 +61,11 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, Goo
         }
 
         await HandleUploadOutcome(videoResponse, request.VideoFile);
-        return videoResponse;
+        
+        return videoResponse!;
     }
 
-    private async Task<GoogleVideo?> TryUploadVideo(UploadVideoCommand request, int uploadAttempts,
+    private async Task<YoutubeResponse?> TryUploadVideo(UploadVideoCommand request, int uploadAttempts,
         CancellationToken cancellationToken)
     {
         FileStream? fileStream = default;
@@ -78,11 +80,11 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, Goo
         }
         catch (Google.GoogleApiException ex) when (ex.HttpStatusCode == HttpStatusCode.Forbidden)
         {
-            return await HandleFailedUpload(ex, uploadAttempts, cancellationToken) ? null : new GoogleVideo();
+            return await HandleFailedUpload(ex, uploadAttempts, cancellationToken) ? null : new YoutubeResponse();
         }
         catch (Exception ex)
         {
-            return await HandleFailedUpload(ex, uploadAttempts, cancellationToken) ? null : new GoogleVideo();
+            return await HandleFailedUpload(ex, uploadAttempts, cancellationToken) ? null : new YoutubeResponse();
         }
     }
 
@@ -112,7 +114,7 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, Goo
         return videosInsertRequest;
     }
 
-    private async Task<GoogleVideo?> UploadVideoAsync(VideosResource.InsertMediaUpload videosInsertRequest,
+    private async Task<YoutubeResponse> UploadVideoAsync(VideosResource.InsertMediaUpload videosInsertRequest,
         CancellationToken cancellationToken)
     {
         GoogleVideo? videoResponse = null;
@@ -125,12 +127,18 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, Goo
 
         await videosInsertRequest.UploadAsync(cancellationToken);
 
-        return videoResponse;
+        return videoResponse?.Id is not null && videoResponse.Status?.UploadStatus == "uploaded"
+            ? new YoutubeResponse
+            {
+                VideoId = videoResponse.Id,
+                UploadStatus = videoResponse.Status.UploadStatus
+            }
+            : throw new YoutubeFailureToUploadVideoException("Failed to upload video to YouTube");
     }
 
-    private async Task HandleUploadOutcome(GoogleVideo? videoResponse, string videoFile)
+    private async Task HandleUploadOutcome(YoutubeResponse? videoResponse, string videoFile)
     {
-        if (videoResponse?.Id is null || videoResponse.Status?.UploadStatus is not "uploaded")
+        if (videoResponse?.VideoId is null || videoResponse?.UploadStatus is not "uploaded")
         {
             _logger.LogError("All attempts failed to upload youtubeApiVideo to YouTube");
             await _videoRepository.MoveFailedVideo(videoFile);

@@ -55,4 +55,14 @@ public class LocalVideoRepository : IVideoRepository
         File.Move(videoFilePath, destinationFilePath);
         return Task.CompletedTask;
     }
+
+    public Task CreateCaptionFailedFile(string videoId, CancellationToken cancellationToken)
+    {
+        var failedVideosDirectory = _videoFilesDirectorySettings.FailedVideosDirectory;
+        var dateTimeNow = DateTime.Now.ToString("yyyyMMdd_HHmm");
+        var newFileName = $"{videoId}_{dateTimeNow}.txt";
+        var destinationFilePath = Path.Combine(failedVideosDirectory, newFileName);
+        File.WriteAllText(destinationFilePath, "Caption failed for this video");
+        return Task.CompletedTask;
+    }
 }

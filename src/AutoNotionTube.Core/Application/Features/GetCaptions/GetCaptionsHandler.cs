@@ -26,12 +26,14 @@ namespace AutoNotionTube.Core.Application.Features.GetCaptions
     public class GetCaptionsHandler : IRequestHandler<GetCaptionsQuery, string>
     {
         private readonly IYoutubeService _youtubeService;
+        private readonly IVideoRepository _videoRepository;
         private readonly ILogger<GetCaptionsHandler> _logger;
 
-        public GetCaptionsHandler(IYoutubeService youtubeService, ILogger<GetCaptionsHandler> logger)
+        public GetCaptionsHandler(IYoutubeService youtubeService, ILogger<GetCaptionsHandler> logger, IVideoRepository videoRepository)
         {
             _youtubeService = youtubeService;
             _logger = logger;
+            _videoRepository = videoRepository;
         }
 
         public async Task<string> Handle(GetCaptionsQuery request, CancellationToken cancellationToken)
@@ -67,6 +69,7 @@ namespace AutoNotionTube.Core.Application.Features.GetCaptions
                 attempt++;
             }
 
+            await _videoRepository.CreateCaptionFailedFile(request.VideoId, cancellationToken);
             throw new CaptionNotAvailableException(
                 $"Captions for video with ID {request.VideoId} are still not available after {maxAttempts} attempts.");
         }
