@@ -1,4 +1,4 @@
-using AutoNotionTube.Domain.Entities;
+using AutoNotionTube.Core.DTOs;
 using MediatR;
 
 namespace AutoNotionTube.Core.Application.Features.GetVideos;

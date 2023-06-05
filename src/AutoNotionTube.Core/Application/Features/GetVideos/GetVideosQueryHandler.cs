@@ -15,8 +15,8 @@
 // -----------------------------------------------------------------------
 #endregion
 
+using AutoNotionTube.Core.DTOs;
 using AutoNotionTube.Core.Interfaces;
-using AutoNotionTube.Domain.Entities;
 using MediatR;
 
 namespace AutoNotionTube.Core.Application.Features.GetVideos

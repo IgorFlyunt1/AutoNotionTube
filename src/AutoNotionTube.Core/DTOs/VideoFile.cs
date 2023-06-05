@@ -1,4 +1,4 @@
-namespace AutoNotionTube.Domain.Entities;
+namespace AutoNotionTube.Core.DTOs;
 
 public class VideoFile
 {

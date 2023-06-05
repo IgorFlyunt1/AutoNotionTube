@@ -1,17 +1,17 @@
 using System.Net;
+using AutoNotionTube.Core.DTOs;
 using AutoNotionTube.Core.Interfaces;
 using Google.Apis.Upload;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Video = AutoNotionTube.Domain.Entities.Video;
 using GoogleVideo = Google.Apis.YouTube.v3.Data.Video;
 
 namespace AutoNotionTube.Core.Application.Features.UploadVideo;
 /// <summary>
 /// This class 'UploadVideoCommandHandler' adheres to the principles of Object-Oriented Programming (OOP) by using classes, encapsulation and inheritance.
-/// It implements the IRequestHandler interface and encapsulates the data and methods for handling the upload video command.
+/// It implements the IRequestHandler interface and encapsulates the data and methods for handling the upload youtubeApiVideo command.
 /// SOLID principles are also followed:
 /// - Single Responsibility Principle (SRP): Each method has a single responsibility.
 /// - Open-Closed Principle (OCP): The class is open for extension, but closed for modification.
@@ -48,7 +48,7 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, Goo
 
     public async Task<GoogleVideo?> Handle(UploadVideoCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Uploading video: {VideoFile}", request.VideoFile);
+        _logger.LogInformation("Uploading youtubeApiVideo: {VideoFile}", request.VideoFile);
 
         var uploadAttempts = 0;
         GoogleVideo? videoResponse = null;
@@ -66,11 +66,12 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, Goo
     private async Task<GoogleVideo?> TryUploadVideo(UploadVideoCommand request, int uploadAttempts,
         CancellationToken cancellationToken)
     {
+        FileStream? fileStream = default;
         try
         {
             var youTubeService = await _youtubeService.GetService(cancellationToken);
             var video = CreateVideo(request.VideoTitle);
-            var fileStream = new FileStream(request.VideoFile, FileMode.Open);
+            fileStream = new FileStream(request.VideoFile, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
             VideosResource.InsertMediaUpload videosInsertRequest = CreateVideoInsertRequest(youTubeService, video, fileStream);
 
             return await UploadVideoAsync(videosInsertRequest, cancellationToken);
@@ -85,9 +86,9 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, Goo
         }
     }
 
-    private Video CreateVideo(string videoTitle)
+    private YoutubeApiVideo CreateVideo(string videoTitle)
     {
-        return new Video
+        return new YoutubeApiVideo
         {
             Snippet = new VideoSnippet { Title = videoTitle },
             Status = new VideoStatus
@@ -98,12 +99,12 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, Goo
         };
     }
 
-    private VideosResource.InsertMediaUpload CreateVideoInsertRequest(YouTubeService? youTubeService, Video video,
-        FileStream fileStream)
+    private VideosResource.InsertMediaUpload CreateVideoInsertRequest(YouTubeService? youTubeService, YoutubeApiVideo youtubeApiVideo,
+        FileStream? fileStream)
     {
         var videosInsertRequest = youTubeService.Videos.Insert(
-            new GoogleVideo { Snippet = video.Snippet, Status = video.Status },
-            "snippet,status", fileStream, "video/*");
+            new GoogleVideo { Snippet = youtubeApiVideo.Snippet, Status = youtubeApiVideo.Status },
+            "snippet,status", fileStream, "youtubeApiVideo/*");
 
         videosInsertRequest.ProgressChanged += VideosInsertRequest_ProgressChanged;
         videosInsertRequest.ResponseReceived += VideosInsertRequest_ResponseReceived;
@@ -131,7 +132,7 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, Goo
     {
         if (videoResponse?.Id is null || videoResponse.Status?.UploadStatus is not "uploaded")
         {
-            _logger.LogError("All attempts failed to upload video to YouTube");
+            _logger.LogError("All attempts failed to upload youtubeApiVideo to YouTube");
             await _videoRepository.MoveFailedVideo(videoFile);
         }
     }
@@ -153,7 +154,7 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, Goo
     private async Task<bool> HandleFailedUpload(Exception progressException, int uploadAttempts,
         CancellationToken cancellationToken)
     {
-        _logger.LogError(progressException, "Failed to upload video to YouTube");
+        _logger.LogError(progressException, "Failed to upload youtubeApiVideo to YouTube");
 
         if (uploadAttempts < 2)
         {
@@ -164,7 +165,7 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, Goo
                 return true;
             }
 
-            _logger.LogWarning("Attempt {Attempt} of 3 failed to upload video to YouTube", uploadAttempts + 1);
+            _logger.LogWarning("Attempt {Attempt} of 3 failed to upload youtubeApiVideo to YouTube", uploadAttempts + 1);
             await Task.Delay(TimeSpan.FromMinutes(3), cancellationToken);
             return true;
         }
@@ -174,6 +175,6 @@ public class UploadVideoCommandHandler : IRequestHandler<UploadVideoCommand, Goo
 
     private void VideosInsertRequest_ResponseReceived(GoogleVideo video)
     {
-        _logger.LogInformation("Video was successfully uploaded");
+        _logger.LogInformation("YoutubeApiVideo was successfully uploaded");
     }
 }

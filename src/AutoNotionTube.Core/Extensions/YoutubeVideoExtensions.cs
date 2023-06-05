@@ -16,9 +16,7 @@ namespace AutoNotionTube.Core.Extensions
 
             var result = (int)Math.Round(approximateWaitTimeSec);
 
-            //TODO: Remove this hack
-            // return result < 300 ? 300 : result;
-            return 1;
+            return result < 300 ? 300 : result;
         }
         
         public static string GetVideoYoutubeUrl(this string videoId)

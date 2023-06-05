@@ -21,5 +21,6 @@ namespace AutoNotionTube.Infrastructure.Settings
     {
         public string Secret { get; set; }
         public string DatabaseId { get; set; }
+        public string AzureFunctionUrl { get; set; }
     }
 }

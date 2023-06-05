@@ -1,5 +1,5 @@
+using AutoNotionTube.Core.DTOs;
 using AutoNotionTube.Core.Interfaces;
-using AutoNotionTube.Domain.Entities;
 using AutoNotionTube.Infrastructure.Extensions;
 using AutoNotionTube.Infrastructure.Settings;
 using Microsoft.Extensions.Options;

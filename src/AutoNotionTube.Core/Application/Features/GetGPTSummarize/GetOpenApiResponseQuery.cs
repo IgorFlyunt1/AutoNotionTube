@@ -16,7 +16,6 @@
 #endregion
 
 using AutoNotionTube.Core.DTOs;
-using AutoNotionTube.Core.Interfaces;
 using MediatR;
 
 namespace AutoNotionTube.Core.Application.Features.GetGPTSummarize
@@ -24,21 +23,5 @@ namespace AutoNotionTube.Core.Application.Features.GetGPTSummarize
     public class GetOpenApiResponseQuery : IRequest<OpenApiResponse>
     {
         public string Captions { get; set; } = null!;
-        public string VideoTitle { get; set; } = null!;
-    }
-    
-    public class GetOpenApiResponseHandler : IRequestHandler<GetOpenApiResponseQuery, OpenApiResponse>
-    {
-        private readonly IOpenApiService _openApiService;
-
-        public GetOpenApiResponseHandler(IOpenApiService openApiService)
-        {
-            _openApiService = openApiService;
-        }
-
-        public async Task<OpenApiResponse> Handle(GetOpenApiResponseQuery request, CancellationToken cancellationToken)
-        {
-            return await _openApiService.GetSummarize(request.Captions, request.VideoTitle);
-        }
     }
 }

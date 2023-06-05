@@ -21,6 +21,6 @@ namespace AutoNotionTube.Core.Interfaces
 {
     public interface IOpenApiService
     {
-        Task<OpenApiResponse> GetSummarize(string captions, string videoTitle);
+        Task<OpenApiResponse> GetSummarize(string captions);
     }
 }

@@ -18,6 +18,7 @@
 using AutoNotionTube.Core.Constants;
 using AutoNotionTube.Core.Interfaces;
 using AutoNotionTube.Infrastructure.Settings;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenAI_API;
 using OpenAI_API.Completions;
@@ -28,15 +29,19 @@ namespace AutoNotionTube.Infrastructure.Services
     public class OpenApiService : IOpenApiService
     {
         private readonly OpenAIAPI _api;
+        private readonly ILogger<OpenApiService> _logger;
 
-        public OpenApiService(IOptions<OpenApiSettings> openApiSettings)
+        public OpenApiService(IOptions<OpenApiSettings> openApiSettings, ILogger<OpenApiService> logger)
         {
+            _logger = logger;
             OpenApiSettings openApiSettings1 = openApiSettings.Value;
             _api = new OpenAIAPI(openApiSettings1.ApiKey);
         }
 
-        public async Task<OpenApiResponse> GetSummarize(string captions, string videoTitle)
+        public async Task<OpenApiResponse> GetSummarize(string captions)
         {
+            _logger.LogInformation("OpenAPI service called");
+            
             OpenApiResponse response = new();
 
             // Create a new conversation
@@ -70,6 +75,8 @@ namespace AutoNotionTube.Infrastructure.Services
             chat.AppendUserInput($"{OpenApiConstants.Tags}");
             string tags = await chat.GetResponseFromChatbotAsync();
             response.Tags = tags.Split(',').ToList();
+            
+            _logger.LogInformation("OpenAPI service finished");
 
             return response;
         }

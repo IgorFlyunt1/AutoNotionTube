@@ -41,26 +41,24 @@ namespace AutoNotionTube.Infrastructure.Services
 
         public async Task<bool> CreateNote(NotionNoteRequest note)
         {
-            // string functionUrl = "https://autonotiontubefunction.azurewebsites.net/api/AutoNotionTubeFunc?code=RoF29PA8IeGtXWVirHohCImv5kBnaFdwnNZs-rW1cojBAzFujQ0K4A==";
-            string functionUrl = "http://localhost:7071/api/AutoNotionTubeFunc";
+            _logger.LogInformation("Calling the Azure Function to create a new Notion Note");
+            
+            var data = new StringContent(JsonSerializer.Serialize(note), Encoding.UTF8, "application/json");
 
-            var body = new { databaseId = "f6cd2e1b3c6a445f8eb136e03130ef6d", pageTitle = "Test Page" + DateTime.Now, };
-
-            var json = JsonSerializer.Serialize(body);
-
-            var data = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PostAsync(functionUrl, data);
+            var response = await _httpClient.PostAsync(_notionSettings.AzureFunctionUrl, data);
 
             if (!response.IsSuccessStatusCode)
             {
+                _logger.LogError(
+                    "Something went wrong when calling the Azure Function. Status Code: {ResponseStatusCode}",
+                    response.StatusCode);
                 throw new Exception("Something went wrong when calling the API.");
             }
 
             string result = await response.Content.ReadAsStringAsync();
 
-            Console.WriteLine(result);
-
+            _logger.LogInformation("Successfully called the Azure Function. Response: {Response}", result);
+            
             return true;
         }
     }

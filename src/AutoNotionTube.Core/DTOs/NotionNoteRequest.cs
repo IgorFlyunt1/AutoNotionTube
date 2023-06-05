@@ -25,6 +25,6 @@ namespace AutoNotionTube.Core.DTOs
         public string Summary { get; set; } = null!;
         public string Steps { get; set; } = null!;
         public string ShortSummary { get; set; } = null!;
-        public string Embed { get; set; } = null!;
+        public string IframeVideo { get; set; } = null!;
     }
 }

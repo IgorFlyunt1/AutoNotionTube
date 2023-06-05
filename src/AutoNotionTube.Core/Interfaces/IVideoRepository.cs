@@ -1,4 +1,4 @@
-using AutoNotionTube.Domain.Entities;
+using AutoNotionTube.Core.DTOs;
 
 namespace AutoNotionTube.Core.Interfaces;
 
