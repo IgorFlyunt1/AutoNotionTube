@@ -18,6 +18,7 @@
 using System.Text;
 using System.Text.Json;
 using AutoNotionTube.Core.DTOs;
+using AutoNotionTube.Core.Exceptions;
 using AutoNotionTube.Core.Interfaces;
 using AutoNotionTube.Infrastructure.Settings;
 using Microsoft.Extensions.Logging;
@@ -43,6 +44,8 @@ namespace AutoNotionTube.Infrastructure.Services
         {
             _logger.LogInformation("Calling the Azure Function to create a new Notion Note");
             
+            note.DatabaseId = _notionSettings.DatabaseId;
+            
             var data = new StringContent(JsonSerializer.Serialize(note), Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync(_notionSettings.AzureFunctionUrl, data);
@@ -52,7 +55,8 @@ namespace AutoNotionTube.Infrastructure.Services
                 _logger.LogError(
                     "Something went wrong when calling the Azure Function. Status Code: {ResponseStatusCode}",
                     response.StatusCode);
-                throw new Exception("Something went wrong when calling the API.");
+                throw new AzureFunctionException(
+                    $"Something went wrong when calling the Azure Function. Status Code: {response.StatusCode}");
             }
 
             string result = await response.Content.ReadAsStringAsync();

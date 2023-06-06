@@ -27,11 +27,12 @@ public class Worker : BackgroundService
         {
             var videoFiles = await GetVideoFiles(stoppingToken);
 
-            if (videoFiles is { Count : 0 }) continue;
+            if (videoFiles is { Count : 0 })
+                continue;
 
             await ProcessAllVideoFiles(videoFiles, stoppingToken);
 
-            await Task.Delay(1000, stoppingToken);
+            await Task.Delay(10000, stoppingToken);
         }
     }
 
@@ -64,7 +65,7 @@ public class Worker : BackgroundService
 
         var youtubeResponse = await UploadVideo(videoFile, stoppingToken);
         await DeleteVideo(videoFile, stoppingToken);
-        var captions = await GetCaptions(youtubeResponse, videoFile, stoppingToken);
+        string captions = await GetCaptions(youtubeResponse, videoFile, stoppingToken);
 
         return new UploadVideoResponse
         {
@@ -84,7 +85,8 @@ public class Worker : BackgroundService
         await _mediator.Send(new DeleteVideoCommand { VideoFile = videoFile.FileName, }, stoppingToken);
     }
 
-    private async Task<string> GetCaptions(YoutubeResponse youtubeResponse, VideoFile videoFile, CancellationToken stoppingToken)
+    private async Task<string> GetCaptions(YoutubeResponse youtubeResponse, VideoFile videoFile,
+        CancellationToken stoppingToken)
     {
         return await _mediator.Send(
             new GetCaptionsQuery
@@ -100,7 +102,8 @@ public class Worker : BackgroundService
         await CreateNotionNote(uploadVideoResponse, openApiSummarize, stoppingToken);
     }
 
-    private async Task<OpenApiResponse> GetOpenApiResponse(UploadVideoResponse uploadVideoResponse, CancellationToken stoppingToken)
+    private async Task<OpenApiResponse> GetOpenApiResponse(UploadVideoResponse uploadVideoResponse,
+        CancellationToken stoppingToken)
     {
         return await _mediator.Send(
             new GetOpenApiResponseQuery { Captions = uploadVideoResponse.YoutubeVideoCaption },
@@ -123,54 +126,5 @@ public class Worker : BackgroundService
         await _mediator.Send(
             new CreateNotionNoteCommand { NotionNoteRequest = note },
             stoppingToken);
-    }
-
-
-    //Test max quota reached for youtube api and wait 10 minutes
-    //Test error when move the same video to failed folder add to video name current date time
-
-    // Upload Transcript ChatGPT
-    //Upload iframe and result from ChatGPT to Notion
-
-    private async Task Test(CancellationToken stoppingToken)
-    {
-        NotionNoteRequest noteRequest = new NotionNoteRequest
-        {
-            Title = "AutoNotionTube test" + DateTime.Now,
-            Steps = "Steps",
-            ShortSummary = "ShortSummary",
-            Summary = "Summary",
-            Tags = new List<string> { "Azure", "AppService", "Availability", "Zone" },
-            DatabaseId = "f6cd2e1b3c6a445f8eb136e03130ef6d",
-            IframeVideo = "fD5rUFNqKZc".GetVideoYoutubeUrl()
-        };
-
-        var notionResponse = await _mediator.Send(
-            new CreateNotionNoteCommand { NotionNoteRequest = noteRequest, }, stoppingToken);
-
-        // var captions =
-        //     await _mediator.Send(
-        //         new GetCaptionsQuery { VideoId = "fD5rUFNqKZc", Seconds = 1, SizeMb = 0.1, }, stoppingToken);
-        //
-        // if (!string.IsNullOrWhiteSpace(captions))
-        // {
-        //     var openApiResponse = await _mediator.Send(
-        //         new GetOpenApiResponseQuery { Captions = captions, VideoTitle = "Azure AppService Availability Zone" },
-        //         stoppingToken);
-        //
-        //     NotionNoteRequest noteRequest = new()
-        //     {
-        //         Title = "Azure AppService Availability Zone" + DateTime.Now,
-        //         ShortSummary = openApiResponse.ShortSummary,
-        //         Steps = openApiResponse.Steps,
-        //         Summary = openApiResponse.Summary,
-        //         Tags = openApiResponse.Tags,
-        //         DatabaseId = "f6cd2e1b3c6a445f8eb136e03130ef6d",
-        //         IframeVideo = "fD5rUFNqKZc".GetVideoEmbedIframe()
-        //     };
-        //
-        //     var notionResponse = await _mediator.Send(
-        //         new CreateNotionNoteCommand { NotionNoteRequest = noteRequest, }, stoppingToken);
-        // }
     }
 }

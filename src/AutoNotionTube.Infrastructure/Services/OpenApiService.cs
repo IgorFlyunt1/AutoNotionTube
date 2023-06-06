@@ -55,21 +55,21 @@ namespace AutoNotionTube.Infrastructure.Services
             string summary = await chat.GetResponseFromChatbotAsync();
             response.Summary = summary;
             
-            Task.Delay(10000).Wait();
+            Task.Delay(5000).Wait();
 
             // Generate steps
             chat.AppendUserInput($"{OpenApiConstants.Steps}");
             string steps = await chat.GetResponseFromChatbotAsync();
             response.Steps = steps;
             
-            Task.Delay(10000).Wait();
+            Task.Delay(5000).Wait();
 
             // Generate short summary
             chat.AppendUserInput($"{OpenApiConstants.ShortSummarize}");
             string shortSummary = await chat.GetResponseFromChatbotAsync();
             response.ShortSummary = shortSummary;
 
-            Task.Delay(10000).Wait();
+            Task.Delay(5000).Wait();
 
             // Generate tags
             chat.AppendUserInput($"{OpenApiConstants.Tags}");
