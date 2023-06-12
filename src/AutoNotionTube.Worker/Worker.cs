@@ -28,11 +28,14 @@ public class Worker : BackgroundService
             var videoFiles = await GetVideoFiles(stoppingToken);
 
             if (videoFiles is { Count : 0 })
+            {
+                await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
                 continue;
+            }
 
             await ProcessAllVideoFiles(videoFiles, stoppingToken);
 
-            await Task.Delay(10000, stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
         }
     }
 
