@@ -17,11 +17,11 @@
 
 using AutoNotionTube.Core.Constants;
 using AutoNotionTube.Core.Interfaces;
+using AutoNotionTube.Infrastructure.Extensions;
 using AutoNotionTube.Infrastructure.Settings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenAI_API;
-using OpenAI_API.Completions;
 using OpenApiResponse = AutoNotionTube.Core.DTOs.OpenApiResponse;
 
 namespace AutoNotionTube.Infrastructure.Services
@@ -74,7 +74,7 @@ namespace AutoNotionTube.Infrastructure.Services
             // Generate tags
             chat.AppendUserInput($"{OpenApiConstants.Tags}");
             string tags = await chat.GetResponseFromChatbotAsync();
-            response.Tags = tags.Split(',').ToList();
+            response.Tags = tags.ParseTags();
             
             _logger.LogInformation("OpenAPI service finished");
 

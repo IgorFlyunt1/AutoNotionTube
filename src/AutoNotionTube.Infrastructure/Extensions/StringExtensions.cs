@@ -42,5 +42,23 @@ namespace AutoNotionTube.Infrastructure.Extensions
             string result = Regex.Replace(text, pattern, "\n");
             return result;
         }
+
+        public static List<string>? ParseTags(this string tags)
+        {
+            List<string> splitByComma = tags.Split(',').ToList();
+
+            List<string> finalTags = new();
+
+            foreach (string tag in splitByComma)
+            {
+                string trimmedTag = tag.Trim();
+                if (trimmedTag.StartsWith("-"))
+                {
+                    finalTags.Add(trimmedTag[1..]);
+                }
+            }
+
+            return finalTags;
+        }
     }
 }

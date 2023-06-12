@@ -30,6 +30,6 @@ namespace AutoNotionTube.Core.Constants
             "Give me a super short extract from your summary in simple words, just as a desktop shortcut just for my brain from this text?";
 
         public const string Tags =
-            "Give me a list of tags from your full summary for my notion note separated by comma and PascalCase (please note if you won't find further tags from you previous summarize answer, please just answer with 'no tags')";
+            "Give me a list of tags from your full summary for my notion note separated by comma and -PascalCase (example : -MyTag1, -MyTag2, -MyTag4) (please note if you won't find further tags from you previous summarize answer, please just answer with 'no tags')";
     }
 }

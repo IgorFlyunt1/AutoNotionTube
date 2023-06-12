@@ -22,6 +22,6 @@ namespace AutoNotionTube.Core.DTOs
         public string Summary { get; set; } = null!;
         public string Steps { get; set; } = null!;
         public string ShortSummary { get; set; } = null!;
-        public IReadOnlyCollection<string> Tags { get; set; } = null!;
+        public IReadOnlyCollection<string>? Tags { get; set; }
     }
 }

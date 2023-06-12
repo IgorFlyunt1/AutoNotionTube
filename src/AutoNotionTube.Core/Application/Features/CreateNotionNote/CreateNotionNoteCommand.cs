@@ -16,7 +16,6 @@
 #endregion
 
 using AutoNotionTube.Core.DTOs;
-using AutoNotionTube.Core.Interfaces;
 using MediatR;
 
 namespace AutoNotionTube.Core.Application.Features.CreateNotionNote
@@ -24,20 +23,5 @@ namespace AutoNotionTube.Core.Application.Features.CreateNotionNote
     public class CreateNotionNoteCommand : IRequest<bool>
     {
         public NotionNoteRequest NotionNoteRequest { get; set; }
-    }
-    
-    public class CreateNotionNoteHandler : IRequestHandler<CreateNotionNoteCommand, bool>
-    {
-        private readonly INotionService _notionService;
-
-        public CreateNotionNoteHandler(INotionService notionService)
-        {
-            _notionService = notionService;
-        }
-
-        public async Task<bool> Handle(CreateNotionNoteCommand request, CancellationToken cancellationToken)
-        {
-            return await _notionService.CreateNote(request.NotionNoteRequest); 
-        }
     }
 }

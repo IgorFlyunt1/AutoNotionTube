@@ -1,6 +1,6 @@
 #region Header
 // -----------------------------------------------------------------------
-//  <copyright file="NotionNoteRequest.cs" company="INVENTIO AG">
+//  <copyright file="CreateNotionNoteHandler.cs" company="INVENTIO AG">
 //      Copyright © 2023 INVENTIO AG
 //      All rights reserved.
 //      INVENTIO AG, Seestrasse 55, CH-6052 Hergiswil, owns and retains all copyrights and other intellectual property rights in this
@@ -15,16 +15,23 @@
 // -----------------------------------------------------------------------
 #endregion
 
-namespace AutoNotionTube.Core.DTOs
+using AutoNotionTube.Core.Interfaces;
+using MediatR;
+
+namespace AutoNotionTube.Core.Application.Features.CreateNotionNote
 {
-    public class NotionNoteRequest
+    public class CreateNotionNoteHandler : IRequestHandler<CreateNotionNoteCommand, bool>
     {
-        public string DatabaseId { get; set; } = null!;
-        public string Title { get; set; } = null!;
-        public IReadOnlyCollection<string>? Tags { get; set; } = null!;
-        public string Summary { get; set; } = null!;
-        public string Steps { get; set; } = null!;
-        public string ShortSummary { get; set; } = null!;
-        public string IframeVideo { get; set; } = null!;
+        private readonly INotionService _notionService;
+
+        public CreateNotionNoteHandler(INotionService notionService)
+        {
+            _notionService = notionService;
+        }
+
+        public async Task<bool> Handle(CreateNotionNoteCommand request, CancellationToken cancellationToken)
+        {
+            return await _notionService.CreateNote(request.NotionNoteRequest); 
+        }
     }
 }

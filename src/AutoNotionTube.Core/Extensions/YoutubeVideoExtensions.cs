@@ -6,17 +6,18 @@ namespace AutoNotionTube.Core.Extensions
     {
         public static int GetApproximateCaptionWaitTime(this int seconds, double sizeMb)
         {
-            const double referenceSizeMB = 10.0;
-            const double referenceDurationSec = 10.0;
-            const double referenceWaitTimeSec = 300.0;
+            // const double referenceSizeMB = 10.0;
+            // const double referenceDurationSec = 10.0;
+            // const double referenceWaitTimeSec = 300.0;
+            //
+            // const double approximationRatio = (referenceSizeMB * referenceDurationSec) / referenceWaitTimeSec;
+            //
+            // double approximateWaitTimeSec = (sizeMb * seconds) / approximationRatio;
+            //
+            // var result = (int)Math.Round(approximateWaitTimeSec);
+            // return result < 300 ? 300 : result;
 
-            const double approximationRatio = (referenceSizeMB * referenceDurationSec) / referenceWaitTimeSec;
-
-            double approximateWaitTimeSec = (sizeMb * seconds) / approximationRatio;
-
-            var result = (int)Math.Round(approximateWaitTimeSec);
-
-            return result < 300 ? 300 : result;
+            return 300;
         }
         
         public static string GetVideoYoutubeUrl(this string videoId)
