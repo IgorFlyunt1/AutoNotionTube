@@ -31,8 +31,6 @@ public static class DependencyInjection
         return services;
     }
 
-
-
     private static void AddYoutubeService(IServiceCollection services) =>
         services.AddScoped<YouTubeService>(provider =>
         {

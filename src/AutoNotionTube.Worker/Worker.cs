@@ -12,6 +12,7 @@ namespace AutoNotionTube.Worker;
 
 public class Worker : BackgroundService
 {
+    private const string NoCaption = "nocaption";
     private readonly ILogger<Worker> _logger;
     private readonly IMediator _mediator;
 
@@ -68,7 +69,12 @@ public class Worker : BackgroundService
 
         var youtubeResponse = await UploadVideo(videoFile, stoppingToken);
         await DeleteVideo(videoFile, stoppingToken);
-        string captions = await GetCaptions(youtubeResponse, videoFile, stoppingToken);
+
+        string captions = "";
+        if (!videoFile.FileName.Contains(NoCaption))
+        {
+            captions = await GetCaptions(youtubeResponse, videoFile, stoppingToken);
+        }
 
         return new UploadVideoResponse
         {
@@ -100,7 +106,12 @@ public class Worker : BackgroundService
 
     private async Task CreateAndSaveNotionNote(UploadVideoResponse uploadVideoResponse, CancellationToken stoppingToken)
     {
-        var openApiSummarize = await GetOpenApiResponse(uploadVideoResponse, stoppingToken);
+        OpenApiResponse openApiSummarize = new();
+        
+        if (!string.IsNullOrEmpty(uploadVideoResponse.YoutubeVideoCaption))
+        {
+            openApiSummarize = await GetOpenApiResponse(uploadVideoResponse, stoppingToken);
+        }
 
         await CreateNotionNote(uploadVideoResponse, openApiSummarize, stoppingToken);
     }
@@ -109,20 +120,20 @@ public class Worker : BackgroundService
         CancellationToken stoppingToken)
     {
         return await _mediator.Send(
-            new GetOpenApiResponseQuery { Captions = uploadVideoResponse.YoutubeVideoCaption },
+            new GetOpenApiResponseQuery { Captions = uploadVideoResponse.YoutubeVideoCaption! },
             stoppingToken);
     }
 
-    private async Task CreateNotionNote(UploadVideoResponse uploadVideoResponse, OpenApiResponse openApiResponse,
+    private async Task CreateNotionNote(UploadVideoResponse uploadVideoResponse, OpenApiResponse? openApiResponse,
         CancellationToken stoppingToken)
     {
         NotionNoteRequest note = new()
         {
             Title = uploadVideoResponse.VideoFile.Title,
-            Tags = openApiResponse.Tags,
-            ShortSummary = openApiResponse.ShortSummary,
-            Steps = openApiResponse.Steps,
-            Summary = openApiResponse.Summary,
+            Tags = openApiResponse?.Tags ?? new List<string>(),
+            ShortSummary = openApiResponse?.ShortSummary ?? "",
+            Steps = openApiResponse?.Steps ?? "",
+            Summary = openApiResponse?.Summary ?? "",
             IframeVideo = uploadVideoResponse.YoutubeVideoId.GetVideoYoutubeUrl()
         };
 

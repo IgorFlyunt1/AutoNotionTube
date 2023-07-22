@@ -19,9 +19,9 @@ namespace AutoNotionTube.Core.DTOs
 {
     public class OpenApiResponse
     {
-        public string Summary { get; set; } = null!;
-        public string Steps { get; set; } = null!;
-        public string ShortSummary { get; set; } = null!;
+        public string? Summary { get; set; }
+        public string? Steps { get; set; }
+        public string? ShortSummary { get; set; }
         public IReadOnlyCollection<string>? Tags { get; set; }
     }
 }

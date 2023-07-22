@@ -21,6 +21,6 @@ namespace AutoNotionTube.Core.DTOs
     {
         public VideoFile VideoFile { get; set; } = null!;
         public string YoutubeVideoId { get; set; } = null!;
-        public string YoutubeVideoCaption { get; set; } = null!;
+        public string? YoutubeVideoCaption { get; set; }
     }
 }
