@@ -22,6 +22,6 @@ namespace AutoNotionTube.Core.Application.Features.CreateNotionNote
 {
     public class CreateNotionNoteCommand : IRequest<bool>
     {
-        public NotionNoteRequest NotionNoteRequest { get; set; }
+        public NotionNoteRequest NotionNoteRequest { get; set; } = null!;
     }
 }
